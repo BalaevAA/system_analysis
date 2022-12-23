@@ -14,6 +14,17 @@ def to_json(s):
             s1.append(a)
     return s1
 
+
+# def mult(df1, df2):
+#     res = df1.copy()
+#     for c in res.columns:
+#         for i in res.index:
+#             res[c][i] = df1[c][i] * df2[c][i]
+#     return res
+def mult(df1, df2):
+    return np.multiply(df1, df2)
+
+
 def matrix_transpose(js):
     groups_ranks = dict(enumerate(js))
     objects = [item for sublist in js for item in sublist]
@@ -27,16 +38,10 @@ def matrix_transpose(js):
         matrix[np.array(prev_objects, dtype=np.int8)[:, None], ids] = 1
         prev_objects.extend(ids)
 
-    result = pd.DataFrame(matrix, columns=object_to_id.keys(), index=object_to_id.keys())
-    result_t = result.transpose()
-    return result, result_t
+    # result = pd.DataFrame(matrix, columns=object_to_id.keys(), index=object_to_id.keys())
+    # result_t = result.transpose()
+    return matrix, matrix.T
 
-def mult(df1, df2):
-    res = df1.copy()
-    for c in res.columns:
-        for i in res.index:
-            res[c][i] = df1[c][i] * df2[c][i]
-    return res
 
 def task(str1, str2):
     j1 = to_json(str1)
@@ -44,15 +49,26 @@ def task(str1, str2):
 
     m1, m1_t = matrix_transpose(j1)
     m2, m2_t = matrix_transpose(j2)
+    print("m1\n")
+    print(m1)
+    print("m2\n")
+    print(m2)
 
     m12 = mult(m1, m2)
     m12_t = mult(m1_t, m2_t)
-
+    print(m12)
     result = m12.copy()
+
     contr = []
-    for c in result.columns:
-        for i in result.index:
+    # for c in result.columns:
+    #     for i in result.index:
+    #         result[c][i] = m12[c][i] + m12_t[c][i]
+    #         if result[c][i] == 0.0 and [i, c] not in contr and [c, i] not in contr:
+    #             contr.append([c, i])
+    for c in range(len(result)):
+        for i in range(len(result)):
             result[c][i] = m12[c][i] + m12_t[c][i]
-            if result[c][i] == 0.0 and [i, c] not in contr and [c, i] not in contr:
-                contr.append([c, i])
+            # if result[c][i] == 0.0 and [i, c] not in contr and [c, i] not in contr:
+            #     contr.append([c, i])
+    print(result)
     return contr
